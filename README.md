@@ -12,7 +12,7 @@ Setup
 -----
 
 ```bash
-ln -s ~/workspace/git-helpers/git-branch-list-with-description ~/bin/
+sudo ln -s ~/git-helpers/git-branch-list-with-description /usr/local/bin/
 ```
 
 ```bash
