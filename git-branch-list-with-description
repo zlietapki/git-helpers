@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+from githelpers import run
+from colorama import init, Fore, Back, Style
+
+init(autoreset=True)
+
+current = run('git rev-parse --abbrev-ref HEAD')
+branches = run("git for-each-ref --format='%(refname)' refs/heads/ | sed 's|refs/heads/||'").split('\n')
+
+for branch in branches:
+    desc = run(f'git config branch.{branch}.description')
+
+    if branch == current:
+        branch = f"* {Fore.YELLOW}{Style.BRIGHT}{branch}{Style.NORMAL}"
+    else:
+        branch = f"  {branch}"
+    print(f"{branch} {Fore.CYAN}{desc}")
