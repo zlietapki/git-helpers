@@ -26,7 +26,7 @@ Usage
 git branch --edit-description
 ```
 
-Enter some comment and save.
+Enter some comment and save
 
 ```bash
 git b
