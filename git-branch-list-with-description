@@ -1,19 +1,69 @@
 #!/usr/bin/env python3
-from githelpers import run
+from githelpers import run, get_len, as_col
 from colorama import init, Fore, Style
+
+MASTER = 'master'
+DEV = 'development12'
 
 init(autoreset=True)
 
-current = run('git rev-parse --abbrev-ref HEAD')
-branches = run("git for-each-ref --format='%(refname)' refs/heads/ | sed 's|refs/heads/||'").split('\n')
+
+def get_merged_to(merged_to):
+    if merged_to not in local_branches:
+        return {}
+    merged_list = run(f"git branch --merged {merged_to} --format='%(refname:short)'").split('\n')
+    res = {merged_branch_name: 1 for merged_branch_name in merged_list}
+    return res
+
+
+local_branches = run("git branch --format='%(refname:short)'").split('\n')
+merged_to_master_list = get_merged_to(MASTER)
+merged_to_dev_list = get_merged_to(DEV)
+current_branch = run('git branch --show-current')
+
+
+class BranchColored:
+    def __init__(self, name):
+        self._name = name
+        self.is_current = True if name == current_branch else False
+        self.is_merged_to_master = True if name in merged_to_master_list else False
+        self.is_merged_to_dev = True if name in merged_to_dev_list else False
+        self.description = run(f"git config branch.{name}.description")
+
+    @property
+    def name(self):
+        if self.is_current:
+            if self.is_merged_to_master:
+                return f"{Fore.GREEN}{Style.BRIGHT}* {self._name}{Style.RESET_ALL}"
+            return f"{Fore.WHITE}{Style.BRIGHT}* {self._name}{Style.RESET_ALL}"
+
+        if self.is_merged_to_master:
+            return f"  {Fore.GREEN}{self._name}{Style.RESET_ALL}"
+        return f"  {self._name}"
+
+    @property
+    def merged_to_dev(self):
+        if self.is_merged_to_dev:
+            return f"{Fore.MAGENTA}DEV{Style.RESET_ALL}"
+        return f"{Fore.MAGENTA}---{Style.RESET_ALL}"
+
+    @property
+    def left(self):
+        left, *right = self.description.split('|', 2)
+        return f"{Fore.MAGENTA}{left}{Style.RESET_ALL}"
+
+    @property
+    def right(self):
+        left, *right = self.description.split('|', 2)
+        right = [part.strip() for part in right]
+        right = " ".join(right) if right else ''
+        return f"{Fore.BLUE}{right}{Style.RESET_ALL}"
+
+
+branches = [BranchColored(branch_name) for branch_name in local_branches]
+name_width = max([get_len(branch.name) for branch in branches])
+left_width = max([get_len(branch.left) for branch in branches])
+# print("12345678901234567890123456789012345678901234567890123456789012345678901234567890")
 for branch in branches:
-    description = run(f"git config branch.{branch}.description")
-    if branch == current:
-        branch = f"{Fore.YELLOW}{Style.BRIGHT}{branch}{Style.NORMAL}"
-    desc, *mr = description.split('|', 2)
-    desc = f"{Fore.CYAN}{desc.strip()}"
-    mr = Fore.BLUE + " ".join(mr).strip() if mr else ''
-    print(branch, desc, mr)
-
-
-
+    print(
+        f"{as_col(branch.name, name_width)} {branch.merged_to_dev} {as_col(branch.left, left_width)} {branch.right}")
