@@ -29,8 +29,6 @@ git branch --edit-description
 Enter some comment and save
 
 ```bash
-git b
+git b - list branches
+git s - branch info
 ```
-
-Comment can be splited by pipe charecter (|)  
-Text after pipe will have different color  

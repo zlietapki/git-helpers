@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+from gitr2d2.repo import Repo
+
+repo = Repo()
+
+branch = repo.current_branch()
+print(branch.name)
+
+# MR state
+mr_info = branch.merge_requests()
+mr_info = mr_info[0]
+print(f"description: {mr_info.data['description']}")
+print(f"state: {mr_info.data['state']}")
+print(f"web_url: {mr_info.data['web_url']}")
+iid = mr_info.data["iid"]
+
+# approvals
+approvals = mr_info.approvals()
+print(f"approvals_left: {approvals.approvals_left}")
+
+# Pipeline
+pipelines = mr_info.pipelines()
+print(f"pipeline: {pipelines[0].status}")
