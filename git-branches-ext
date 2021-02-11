@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 from gitr2d2.repo import Repo
-# from gitr2d2.git import config, branch
 from gitr2d2.color import greenb, green, magenta, white, whiteb
+
+MASTER = 'master'
+DEV = 'development15'
 
 repo = Repo()
 
@@ -10,38 +12,24 @@ branches = repo.local_branches()
 current = repo.current_branch()
 name_width = max([len(branch.name) for branch in branches])
 
-
-def merge_request_weburl(branch: str) -> str:
-    if weburl := config.read(f'branch.{branch}.weburl'):
-        return weburl
-    
-    mr_info = gitlab.merge_requests(source_branch=branch)
-    if mr_info:
-        first_mr = mr_info.pop(0)
-        weburl = first_mr['web_url']
-        config.write(f'branch.{branch}.weburl', weburl)
-        return weburl
-    return ''
-
-
 for branch in branches:
     # * branch_name
     line = ''
     if branch.name == current.name:
         line += whiteb('* ')
-        if branch.is_merged('master'):
+        if branch.is_merged(MASTER):
             line += greenb(f"{branch.name:{name_width}}")
         else:
             line += whiteb(f"{branch.name:{name_width}}")
     else:
         line += '  '
-        if branch.is_merged('master'):
+        if branch.is_merged(MASTER):
             line += green(f"{branch.name:{name_width}}")
         else:
             line += white(f"{branch.name:{name_width}}")
 
     # is merged to development
-    if branch.is_merged('development14'):
+    if branch.is_merged(DEV):
         line += magenta(' DEV')
     else:
         line += ' ---'

@@ -2,6 +2,7 @@ from typing import List
 from urllib.parse import quote_plus
 
 import requests
+from requests.exceptions import ConnectionError
 
 from .config import Config
 from .merge_request import MergeRequest
@@ -24,9 +25,13 @@ class Branch:
 
     def merge_requests(self) -> List[MergeRequest]:
         branch_encoded = quote_plus(self.name)
-        r = requests.get(
-            f"https://{self.config.gitlab_domain}/api/v4/projects/{self.config.project_id}/merge_requests?source_branch={branch_encoded}",
-            headers={'Authorization': f"Bearer {self.config.access_token}"})
+        try:
+            r = requests.get(
+                f"https://{self.config.gitlab_domain}/api/v4/projects/{self.config.project_id}/merge_requests?source_branch={branch_encoded}",
+                headers={'Authorization': f"Bearer {self.config.access_token}"})
+        except ConnectionError as e:
+            exit(f"Connection error: {e}")
+
         if r.status_code != 200:
             raise GitLabErr(r.text)
 
