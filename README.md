@@ -1,5 +1,7 @@
-git-helpers
-===========
+R2D2
+====
+
+R2D2 is a git helper scripts
 
 Prerequisite
 ------------
