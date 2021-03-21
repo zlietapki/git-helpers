@@ -12,11 +12,13 @@ Setup
 -----
 
 ```bash
-sudo ln -s ~/git-helpers/git-branch-list-with-description /usr/local/bin/
+sudo ln -sf ~/gitlabR2D2/git-branches-ext /usr/local/bin/
+sudo ln -sf ~/gitlabR2D2/git-status-ext /usr/local/bin/
 ```
 
 ```bash
-git config --global alias.b '!git-branch-list-with-description'
+git config --global alias.b '!git-branches-ext'
+git config --global alias.s '!git-status-ext'
 ```
 
 Usage
