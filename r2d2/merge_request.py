@@ -42,6 +42,10 @@ class MergeRequest:
     def state(self) -> str:
         return self.data['state']
 
+    @cached_property
+    def description(self) -> str:
+        return self.data['description']
+
     def approvals(self) -> approvals.Approvals:
         apprs = approvals.Approvals.get_by_mr_iid(self.iid, self.repo)
         return apprs

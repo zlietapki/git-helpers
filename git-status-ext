@@ -8,44 +8,48 @@ try:
 except ValueError as e:
     exit(e)
 
-merge_requests = repo.current_branch.merge_requests()
+
+def show_merge_requests():
+    merge_requests = repo.current_branch.merge_requests()
+    if not merge_requests:
+        if repo.current_branch.has_remote():
+            print(f"To create a merge request visit:")
+            print(repo.gitlab_https_new_merge_request + repo.current_branch.name)
+        return
+
+    print(cyan("Merge requests:"))
+    for merge_request in merge_requests:
+        print("--------------------------------")
+        print(bright(merge_request.web_url))
+
+        # State
+        if merge_request.state == "merged":
+            print(green(f"State: {merge_request.state}"))
+        elif merge_request.state == "opened":
+            print(magenta(f"State: {merge_request.state}"))
+        else:
+            print(red(f"State: {merge_request.state}"))
+
+        # approvals
+        approvals = merge_request.approvals()
+        approvals_left = approvals.approvals_left
+        if approvals_left == 0:
+            print(green(f"Approvals left: {approvals.approvals_left}"))
+        else:
+            print(red(f"Approvals left: {approvals.approvals_left}"))
+
+        # Pipeline status
+        if pipelines := merge_request.pipelines():
+            pipeline_status = pipelines[0].status
+            if pipeline_status == "success":
+                print(green(f"pipeline: {pipeline_status}"))
+            else:
+                print(red(f"pipeline: {pipeline_status}"))
+
+        # Description
+        if merge_request.description:
+            print(f"Description: {merge_request.description}")
+
 
 print("On branch " + whiteb(repo.current_branch.name))
-
-if not merge_requests:
-    if repo.current_branch.has_remote():
-        print(f"To create a merge request visit:")
-        print(repo.gitlab_https_new_merge_request + repo.current_branch.name)
-
-if merge_requests:
-    print(cyan("Merge requests:"))
-for merge_request in merge_requests:
-    print("--------------------------------")
-    print(bright(merge_request.web_url))
-
-    # State
-    if merge_request.state == "merged":
-        print(green(f"State: {merge_request.state}"))
-    elif merge_request.state == "opened":
-        print(magenta(f"State: {merge_request.state}"))
-    else:
-        print(red(f"State: {merge_request.state}"))
-
-    # approvals
-    approvals = merge_request.approvals()
-    approvals_left = approvals.approvals_left
-    if approvals_left == 0:
-        print(green(f"Approvals left: {approvals.approvals_left}"))
-    else:
-        print(red(f"Approvals left: {approvals.approvals_left}"))
-
-    # Pipeline status
-    if pipelines := merge_request.pipelines():
-        pipeline_status = pipelines[0].status
-        if pipeline_status == "success":
-            print(green(f"pipeline: {pipeline_status}"))
-        else:
-            print(red(f"pipeline: {pipeline_status}"))
-
-    # Description
-    print(f"Description: {merge_request.data['description']}")
+show_merge_requests()
