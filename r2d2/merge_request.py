@@ -11,8 +11,8 @@ from .exceptions import *
 
 class MergeRequest:
     def __init__(self, repo: "repo.Repo", data: dict):
-        self.repo = repo
-        self.data = data
+        self._repo = repo
+        self._data = data
 
     @classmethod
     def mrs_by_branchname(cls, branch_name: str, repo: "repo.Repo") -> List["MergeRequest"]:
@@ -32,29 +32,29 @@ class MergeRequest:
 
     @cached_property
     def web_url(self) -> str:
-        return self.data['web_url']
+        return self._data['web_url']
 
     @cached_property
     def iid(self) -> str:
-        return self.data['iid']
+        return self._data['iid']
 
     @cached_property
     def state(self) -> str:
-        return self.data['state']
+        return self._data['state']
 
     @cached_property
     def description(self) -> str:
-        return self.data['description']
+        return self._data['description']
 
     def approvals(self) -> approvals.Approvals:
-        apprs = approvals.Approvals.get_by_mr_iid(self.iid, self.repo)
+        apprs = approvals.Approvals.get_by_mr_iid(self.iid, self._repo)
         return apprs
 
     def pipelines(self) -> List[pipeline.Pipeline]:
         r = requests.get(
-            f"https://{self.repo.gitlab_domain}/api/v4/projects/{self.repo.project_id}/merge_requests/{self.iid}/pipelines",
-            headers={'Authorization': f"Bearer {self.repo.access_token}"})
+            f"https://{self._repo.gitlab_domain}/api/v4/projects/{self._repo.project_id}/merge_requests/{self.iid}/pipelines",
+            headers={'Authorization': f"Bearer {self._repo.access_token}"})
         if r.status_code != 200:
             raise GitLabErr(r.text)
-        ppls = [pipeline.Pipeline(self.repo, data) for data in r.json()]
+        ppls = [pipeline.Pipeline(self._repo, data) for data in r.json()]
         return ppls
