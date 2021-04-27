@@ -12,6 +12,10 @@ __all__ = [
     "whiteb",
     "red",
     "redb",
+    "yellow",
+    "yellowb",
+    "cyan",
+    "cyanb",
 ]
 
 
@@ -57,3 +61,19 @@ def red(text: str) -> str:
 
 def redb(text: str) -> str:
     return f"{Fore.RED}{Style.BRIGHT}{text}{Style.RESET_ALL}"
+
+
+def yellow(text: str) -> str:
+    return f"{Fore.YELLOW}{text}{Style.RESET_ALL}"
+
+
+def yellowb(text: str) -> str:
+    return f"{Fore.YELLOW}{Style.BRIGHT}{text}{Style.RESET_ALL}"
+
+
+def cyan(text: str) -> str:
+    return f"{Fore.CYAN}{text}{Style.RESET_ALL}"
+
+
+def cyanb(text: str) -> str:
+    return f"{Fore.CYAN}{Style.BRIGHT}{text}{Style.RESET_ALL}"

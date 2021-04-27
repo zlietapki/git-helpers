@@ -14,11 +14,11 @@ print("On branch " + whiteb(repo.current_branch.name))
 
 if not merge_requests:
     if repo.current_branch.has_remote():
-        print(f"To create a merge request for {repo.current_branch.name}, visit:")
+        print(f"To create a merge request visit:")
         print(repo.gitlab_https_new_merge_request + repo.current_branch.name)
 
 if merge_requests:
-    print("Merge requests:")
+    print(cyan("Merge requests:"))
 for merge_request in merge_requests:
     print("--------------------------------")
     print(bright(merge_request.web_url))
