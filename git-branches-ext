@@ -2,7 +2,6 @@
 
 import r2d2.repo
 from r2d2.color import *
-from r2d2.branch import Branch
 
 MASTER = 'master'
 

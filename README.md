@@ -14,11 +14,13 @@ Setup
 -----
 
 ```bash
-sudo ln -sf ~/gitlabR2D2/git-branches-ext /usr/local/bin/
-sudo ln -sf ~/gitlabR2D2/git-status-ext /usr/local/bin/
+cd <r2d2>
+ln -sf $(pwd)/git-branches-ext ~/bin
+ln -sf $(pwd)/git-status-ext ~/bin
 ```
 
 ```bash
+git config --global alias.config-ext '!git-config-ext' # TODO
 git config --global alias.b '!git-branches-ext'
 git config --global alias.s '!git-status-ext'
 ```
@@ -27,12 +29,14 @@ Usage
 -----
 
 ```bash
-git branch --edit-description
-```
+cd <git_project_folder>
 
-Enter some comment and save
+# git config-ext # TODO
+git config --local r2d2.accesstoken <token>
+git config --local r2d2.projectid <project_id>
+git config --local r2d2.checkmergedto development
 
-```bash
-git b - list branches
-git s - branch info
+git s # branch info
+git b # list branches
+git branch --edit-description # Enter some comment and save
 ```

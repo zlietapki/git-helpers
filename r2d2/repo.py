@@ -34,7 +34,22 @@ class Repo:
         raise RuntimeError(f"Can't find domain name in remote_origin_url: {remote_origin_url}")
 
     @cached_property
+    def gitlab_https_new_merge_request(self) -> str:
+        """
+        https://<host>/<username>/<project>/-/merge_requests/new?merge_request%5Bsource_branch%5D=
+        """
+        remote_origin_url = self.read('remote.origin.url')
+        if m := re.search(r'@([^:]+):(.+).git', remote_origin_url):
+            https_url = "https://" + m.group(1) + "/" + m.group(2) + "/-/merge_requests/new?merge_request%5Bsource_branch%5D="
+            return https_url
+
+        raise RuntimeError(f"Can't find domain name in remote_origin_url: {remote_origin_url}")
+
+    @cached_property
     def remote_origin_url(self) -> str:
+        """
+        git@<host>:<username>/<project>.git
+        """
         return self.read('remote.origin.url')
 
     @cached_property

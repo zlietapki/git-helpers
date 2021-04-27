@@ -21,3 +21,6 @@ class Branch:
 
     def is_merged_in(self, into: str) -> bool:
         return bool(git(f"git branch {self.name} --merged {into}"))
+
+    def has_remote(self) -> bool:
+        return bool(git(f"git config branch.{self.name}.remote"))
