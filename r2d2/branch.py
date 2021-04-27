@@ -1,9 +1,9 @@
-from typing import List
+from typing import List, Optional
 
 from . import repo
 from . import merge_request
 
-from . import run
+from . import git
 
 
 class Branch:
@@ -13,11 +13,11 @@ class Branch:
 
     def description(self) -> str:
         description = self.repo.read(f"branch.{self.name}.description")
-        return description
+        return description if description else ""
 
     def merge_requests(self) -> List["merge_request.MergeRequest"]:
         mrs = merge_request.MergeRequest.mrs_by_branchname(self.name, self.repo)
         return mrs
 
     def is_merged_in(self, into: str) -> bool:
-        return bool(run(f"git branch {self.name} --merged {into}"))
+        return bool(git(f"git branch {self.name} --merged {into}"))

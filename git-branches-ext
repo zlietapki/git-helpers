@@ -2,10 +2,9 @@
 
 import r2d2.repo
 from r2d2.color import *
-
+from r2d2.branch import Branch
 
 MASTER = 'master'
-DEV = 'development15'
 
 repo = None
 try:
@@ -16,8 +15,11 @@ except ValueError as e:
 branches = repo.local_branches()
 name_width = max([len(branch.name) for branch in branches])
 
+if dev_branch := repo.check_merged_to:
+    if dev_branch not in [br.name for br in branches]:
+        dev_branch = None
+
 for branch in branches:
-    # * branch_name
     line = ''
     if branch.name == repo.current_branch.name:
         line += whiteb('* ')
@@ -32,11 +34,12 @@ for branch in branches:
         else:
             line += white(f"{branch.name:{name_width}}")
 
-    # is merged to development
-    if branch.is_merged_in(DEV):
-        line += magenta(' DEV')
-    else:
-        line += ' ---'
+    # is current brunch merged to development branch
+    if dev_branch:
+        if branch.is_merged_in(dev_branch):
+            line += magenta(' DEV')
+        else:
+            line += ' ---'
 
     # MR weblink
     if mrs := branch.merge_requests():

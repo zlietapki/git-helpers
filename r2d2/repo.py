@@ -2,11 +2,11 @@ import re
 import requests
 from functools import cached_property
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 from urllib.parse import quote_plus
 
 from . import branch
-from . import run
+from . import git
 from .exceptions import *
 
 
@@ -19,11 +19,11 @@ class Repo:
         if not self._is_gitlab():
             raise ValueError("Not a gitlab repo")
 
-    def read(self, key: str) -> str:
-        return run(f"git config --file={self.git_folder}/config --get {key}")
+    def read(self, key: str) -> Optional[str]:
+        return git(f"git config --file={self.git_folder}/config --get {key}")
 
     def write(self, key: str, value: str) -> None:
-        run(f"git config --file={self.git_folder} {key} {value}")
+        git(f"git config --file={self.git_folder} {key} {value}")
 
     @cached_property
     def gitlab_domain(self) -> str:
@@ -39,11 +39,11 @@ class Repo:
 
     @cached_property
     def current_branch(self) -> "branch.Branch":
-        name = run(f"git --git-dir={self.git_folder} branch --show-current")
+        name = git(f"git --git-dir={self.git_folder} branch --show-current")
         return branch.Branch(self, name)
 
     def local_branches(self) -> List["branch.Branch"]:
-        names = run(f"git --git-dir={self.git_folder} branch --format='%(refname:short)'").split('\n')
+        names = git(f"git --git-dir={self.git_folder} branch --format='%(refname:short)'").split('\n')
         return [branch.Branch(self, name) for name in names]
 
     def _is_gitlab(self) -> bool:
@@ -95,3 +95,7 @@ class Repo:
 
         access_token = resp.json()['access_token']
         return access_token
+
+    @cached_property
+    def check_merged_to(self) -> Optional[str]:
+        return self.read('R2D2.checkmergedto')
