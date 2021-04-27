@@ -17,7 +17,7 @@ class Repo:
 
         self.git_folder = Path(git_folder)
         if not self._is_gitlab():
-            raise ValueError("Not a gitlab repo")
+            raise ValueError("Sorry. This is not a GitLab repo")
 
     def read(self, key: str) -> Optional[str]:
         return git(f"git config --file={self.git_folder}/config --get {key}")
